@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+ï»¿<!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <title><%= workspace.name %> | ƒCƒxƒ“ƒg‹L˜^</title>
+  <title><%= workspace.name %> | ã‚¤ãƒ™ãƒ³ãƒˆè¨˜éŒ²</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
@@ -11,22 +11,22 @@
 <body>
   <div class="app-container">
     <header class="page-header">
-      <a href="/" class="back-btn">? –ß‚é</a>
+      <a href="/" class="back-btn">? æˆ»ã‚‹</a>
       <div class="header-center">
         <div class="header-badge workspace-<%= workspace.type %>">
-          <%= workspace.type === 'business' ? '?? Ž–‹Æ' : '?? ƒoƒCƒg' %>
+          <%= workspace.type === 'business' ? '?? äº‹æ¥­' : '?? ãƒã‚¤ãƒˆ' %>
         </div>
         <h1 class="page-title"><%= workspace.name %></h1>
       </div>
     </header>
     <main class="page-main">
-      <a href="/events/new/<%= workspace.id %>" class="btn btn-primary btn-full">{ V‚µ‚¢ƒCƒxƒ“ƒg‚ð‹L˜^‚·‚é</a>
+      <a href="/events/new/<%= workspace.id %>" class="btn btn-primary btn-full">ï¼‹ æ–°ã—ã„ã‚¤ãƒ™ãƒ³ãƒˆã‚’è¨˜éŒ²ã™ã‚‹</a>
       <section class="section">
         <% if (events.length === 0) { %>
         <div class="empty-state">
           <div class="empty-icon">??</div>
-          <p>‚Ü‚¾ƒCƒxƒ“ƒg‚ª‚ ‚è‚Ü‚¹‚ñ</p>
-          <p class="empty-sub">ã‚Ìƒ{ƒ^ƒ“‚©‚ç‹L˜^‚ðŽn‚ß‚Ü‚µ‚å‚¤</p>
+          <p>ã¾ã ã‚¤ãƒ™ãƒ³ãƒˆãŒã‚ã‚Šã¾ã›ã‚“</p>
+          <p class="empty-sub">ä¸Šã®ãƒœã‚¿ãƒ³ã‹ã‚‰è¨˜éŒ²ã‚’å§‹ã‚ã¾ã—ã‚‡ã†</p>
         </div>
         <% } else { %>
         <div class="event-list">
@@ -48,3 +48,4 @@
   <script src="/js/app.js"></script>
 </body>
 </html>
+
