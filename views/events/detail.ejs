@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title><%= event.name %> | イベント記録</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="page-header">
+      <a href="/workspaces/<%= event.workspace_id %>/events" class="back-btn">? 戻る</a>
+      <div class="header-center">
+        <div class="header-badge workspace-<%= event.workspace_type %>">
+          <%= event.workspace_type === 'business' ? '?? 事業' : '?? バイト' %>
+        </div>
+        <h1 class="page-title"><%= event.name %></h1>
+        <div class="event-meta">
+          <%= new Date(event.date).toLocaleDateString('ja-JP', {year:'numeric',month:'long',day:'numeric',weekday:'short'}) %>
+          <% if (event.location) { %> ・ ?? <%= event.location %><% } %>
+        </div>
+      </div>
+    </header>
+    <div class="summary-bar">
+      <div class="summary-item">
+        <div class="summary-label">売上</div>
+        <div class="summary-value sales">\<%= totalSales.toLocaleString() %></div>
+      </div>
+      <div class="summary-divider">?</div>
+      <div class="summary-item">
+        <div class="summary-label">経費</div>
+        <div class="summary-value expense">\<%= totalExpenses.toLocaleString() %></div>
+      </div>
+      <div class="summary-divider">=</div>
+      <div class="summary-item">
+        <div class="summary-label">利益</div>
+        <div class="summary-value profit <%= profit >= 0 ? 'positive' : 'negative' %>">\<%= profit.toLocaleString() %></div>
+      </div>
+    </div>
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="sales">?? 販売</button>
+      <button class="tab-btn" data-tab="expenses">?? 経費</button>
+      <button class="tab-btn" data-tab="memo">?? メモ</button>
+      <button class="tab-btn" data-tab="report">?? 日報</button>
+    </nav>
+    <main class="page-main tab-content-container">
+      <div id="tab-sales" class="tab-content active">
+        <form action="/sales" method="POST" class="inline-form">
+          <input type="hidden" name="event_id" value="<%= event.id %>">
+          <div class="inline-form-grid">
+            <input type="text" name="product_name" class="form-input" placeholder="商品名" required>
+            <input type="number" name="quantity" class="form-input" placeholder="数量" min="1" required>
+            <input type="number" name="unit_price" class="form-input" placeholder="単価(円)" min="0" required>
+            <button type="submit" class="btn btn-primary">追加</button>
+          </div>
+        </form>
+        <% if (sales.length > 0) { %>
+        <div class="record-list">
+          <% sales.forEach(sale => { %>
+          <div class="record-item">
+            <div class="record-main">
+              <div class="record-name"><%= sale.product_name %></div>
+              <div class="record-detail"><%= sale.quantity %>個 × \<%= sale.unit_price.toLocaleString() %></div>
+            </div>
+            <div class="record-amount sales">\<%= sale.subtotal.toLocaleString() %></div>
+            <form action="/sales/<%= sale.id %>/delete" method="POST" class="delete-form">
+              <button type="submit" class="btn-delete" onclick="return confirm('削除しますか？')">×</button>
+            </form>
+          </div>
+          <% }) %>
+          <div class="record-total"><span>合計</span><span>\<%= totalSales.toLocaleString() %></span></div>
+        </div>
+        <% } else { %>
+        <div class="empty-state-small">まだ販売記録がありません</div>
+        <% } %>
+      </div>
+      <div id="tab-expenses" class="tab-content">
+        <form action="/expenses" method="POST" class="inline-form">
+          <input type="hidden" name="event_id" value="<%= event.id %>">
+          <div class="inline-form-grid">
+            <input type="text" name="description" class="form-input" placeholder="経費名（例：交通費）" required>
+            <input type="number" name="amount" class="form-input" placeholder="金額(円)" min="0" required>
+            <button type="submit" class="btn btn-primary">追加</button>
+          </div>
+        </form>
+        <% if (expenses.length > 0) { %>
+        <div class="record-list">
+          <% expenses.forEach(exp => { %>
+          <div class="record-item">
+            <div class="record-main"><div class="record-name"><%= exp.description %></div></div>
+            <div class="record-amount expense">\<%= exp.amount.toLocaleString() %></div>
+            <form action="/expenses/<%= exp.id %>/delete" method="POST" class="delete-form">
+              <button type="submit" class="btn-delete" onclick="return confirm('削除しますか？')">×</button>
+            </form>
+          </div>
+          <% }) %>
+          <div class="record-total"><span>合計</span><span>\<%= totalExpenses.toLocaleString() %></span></div>
+        </div>
+        <% } else { %>
+        <div class="empty-state-small">まだ経費記録がありません</div>
+        <% } %>
+      </div>
+      <div id="tab-memo" class="tab-content">
+        <form action="/memos" method="POST" class="form-card">
+          <input type="hidden" name="event_id" value="<%= event.id %>">
+          <div class="form-group">
+            <label class="form-label">?? お客様の反応</label>
+            <textarea name="customer_reaction" class="form-textarea" placeholder="どんな反応が多かった？"><%= memo.customer_reaction || '' %></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">? よく聞かれた質問</label>
+            <textarea name="faq" class="form-textarea" placeholder="「〇〇は？」など"><%= memo.faq || '' %></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">?? POP・売場改善の反応</label>
+            <textarea name="pop_feedback" class="form-textarea" placeholder="新しいPOPの反応など"><%= memo.pop_feedback || '' %></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">?? 次回改善点</label>
+            <textarea name="next_improvement" class="form-textarea" placeholder="次回やること"><%= memo.next_improvement || '' %></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-full">メモを保存する</button>
+        </form>
+      </div>
+      <div id="tab-report" class="tab-content">
+        <div class="report-card">
+          <pre id="report-text" class="report-text">【日報】<%= event.name %>
+?? <%= new Date(event.date).toLocaleDateString('ja-JP', {year:'numeric',month:'long',day:'numeric',weekday:'short'}) %><% if (event.location) { %>
+?? <%= event.location %><% } %>
+
+━━ 売上・収支 ━━
+売上合計：\<%= totalSales.toLocaleString() %>
+経費合計：\<%= totalExpenses.toLocaleString() %>
+利　　益：\<%= profit.toLocaleString() %>
+
+━━ 商品別販売 ━━
+<% if (sales.length > 0) { sales.forEach(s => { %>・<%= s.product_name %>：<%= s.quantity %>個 × \<%= s.unit_price.toLocaleString() %> = \<%= s.subtotal.toLocaleString() %>
+<% }) } else { %>（記録なし）
+<% } %>
+━━ 経費内訳 ━━
+<% if (expenses.length > 0) { expenses.forEach(e => { %>・<%= e.description %>：\<%= e.amount.toLocaleString() %>
+<% }) } else { %>（記録なし）
+<% } %>
+━━ お客様の反応 ━━
+<%= memo.customer_reaction || '（未記入）' %>
+
+━━ よく聞かれた質問 ━━
+<%= memo.faq || '（未記入）' %>
+
+━━ POP・売場改善 ━━
+<%= memo.pop_feedback || '（未記入）' %>
+
+━━ 次回改善点 ━━
+<%= memo.next_improvement || '（未記入）' %></pre>
+          <button class="btn btn-primary btn-full" onclick="copyReport()">?? 日報をコピーする</button>
+          <div id="copy-toast" class="toast">コピーしました！</div>
+        </div>
+      </div>
+    </main>
+    <div class="danger-zone">
+      <form action="/events/<%= event.id %>/delete" method="POST" onsubmit="return confirm('このイベントと全記録を削除しますか？')">
+        <button type="submit" class="btn-text-danger">このイベントを削除する</button>
+      </form>
+    </div>
+  </div>
+  <script src="/js/app.js"></script>
+</body>
+</html>

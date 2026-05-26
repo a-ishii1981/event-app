@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>新規イベント | イベント記録</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="page-header">
+      <a href="/workspaces/<%= workspaceId %>/events" class="back-btn">? 戻る</a>
+      <h1 class="page-title">新しいイベント</h1>
+    </header>
+    <main class="page-main">
+      <form action="/events" method="POST" class="form-card">
+        <input type="hidden" name="workspace_id" value="<%= workspaceId %>">
+        <div class="form-group">
+          <label class="form-label">イベント名 <span class="required">*</span></label>
+          <input type="text" name="name" class="form-input" placeholder="例：春のマルシェ" required autofocus>
+        </div>
+        <div class="form-group">
+          <label class="form-label">日付 <span class="required">*</span></label>
+          <input type="date" name="date" class="form-input" required value="<%= new Date().toISOString().split('T')[0] %>">
+        </div>
+        <div class="form-group">
+          <label class="form-label">場所</label>
+          <input type="text" name="location" class="form-input" placeholder="例：〇〇公園 Aブース">
+        </div>
+        <button type="submit" class="btn btn-primary btn-full">記録を始める →</button>
+      </form>
+    </main>
+  </div>
+  <script src="/js/app.js"></script>
+</body>
+</html>
